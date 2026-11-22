@@ -12,12 +12,18 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.catalog import router as catalog_router
+from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.invoices import router as invoices_router
+from app.api.v1.tips import router as tips_router
+from app.api.v1.exchange_rates import router as exchange_rates_router
 from app.db.session import get_db
 
 router = APIRouter()
 router.include_router(catalog_router)
 router.include_router(invoices_router)
+router.include_router(tips_router)
+router.include_router(exchange_rates_router)
+router.include_router(dashboard_router)
 
 
 @router.get("/health", tags=["health"])

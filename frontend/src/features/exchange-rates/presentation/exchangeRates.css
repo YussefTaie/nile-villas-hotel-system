@@ -1,0 +1,51 @@
+.exchange-content { display: grid; gap: var(--space-lg); }
+.exchange-base-card, .exchange-history-card { padding: var(--space-lg); }
+.exchange-section-heading { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md); }
+.exchange-section-heading__icon { display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border-radius: var(--radius-lg); background: var(--surface-container-high); color: var(--primary); }
+.exchange-section-heading h2, .exchange-history-heading h2 { margin: 0; font: 600 var(--type-headline-md-size)/var(--type-headline-md-line) var(--font-heading); }
+.exchange-section-heading p, .exchange-history-heading p { margin: 3px 0 0; color: var(--secondary); font-size: var(--type-body-sm-size); }
+.exchange-section-heading > .ui-chip { margin-left: auto; }
+.exchange-usd-row { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); border-radius: var(--radius-lg); background: var(--surface-container-low); }
+.exchange-currency-mark { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: var(--radius-lg); background: var(--surface-container-high); color: var(--primary); font-size: 20px; font-weight: 600; }
+.exchange-currency-mark--usd { background: var(--primary-container); color: var(--on-primary); }
+.exchange-usd-row > div:nth-child(2) { display: grid; gap: 3px; }
+.exchange-usd-row small { color: var(--secondary); font-size: var(--type-body-sm-size); }
+.exchange-usd-rate { display: grid; gap: 3px; margin-left: auto; padding: 8px 14px; border-radius: var(--radius); background: var(--surface-container-lowest); }
+.exchange-usd-rate span { color: var(--secondary); font-size: 10px; font-weight: 600; letter-spacing: .04em; }
+.exchange-current-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); margin-top: var(--space-md); }
+.exchange-current-card { display: grid; gap: var(--space-sm); background: var(--surface-container-low); box-shadow: none; }
+.exchange-current-card__top { display: flex; align-items: center; justify-content: space-between; }
+.exchange-current-card__name { font: 600 var(--type-title-md-size)/var(--type-title-md-line) var(--font-heading); }
+.exchange-current-card__name span { color: var(--secondary); font-weight: 500; }
+.exchange-current-card__rate { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-sm); font: 600 26px/34px var(--font-body); font-variant-numeric: tabular-nums; }
+.exchange-current-card__rate small { color: var(--secondary); font: 400 var(--type-body-sm-size)/18px var(--font-body); }
+.exchange-current-card__meta { display: grid; grid-template-columns: auto 1fr; gap: 5px var(--space-md); padding-top: var(--space-sm); border-top: 1px solid var(--outline-variant); color: var(--secondary); font-size: var(--type-body-sm-size); }
+.exchange-current-card__meta strong { color: var(--on-surface); font-weight: 500; }
+.exchange-history-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); margin-bottom: var(--space-md); }
+.exchange-history-count { color: var(--secondary); font-size: var(--type-body-sm-size); white-space: nowrap; }
+.exchange-history-table { min-width: 880px; }
+.exchange-history-table td { height: 60px; }
+.exchange-table-currency { display: block; margin-top: 3px; color: var(--secondary); font-size: var(--type-body-sm-size); }
+.exchange-table-rate { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.exchange-table-rate small { color: var(--secondary); font-size: var(--type-body-sm-size); }
+.exchange-period-separator { padding: 0 4px; color: var(--secondary); }
+.exchange-pagination { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); padding-top: var(--space-md); color: var(--secondary); font-size: var(--type-body-sm-size); }
+.exchange-pagination > div { display: flex; gap: var(--space-sm); }
+.exchange-pagination .ui-button { min-height: 36px; padding: 6px 12px; }
+.exchange-message { padding: 11px 14px; border: 1px solid transparent; border-radius: var(--radius-lg); }
+.exchange-message--success { border-color: #c8d6cb; background: #ebf0ec; color: var(--primary-container); }
+.exchange-message--error { border-color: #e8cfcc; background: #f8edeb; color: #8e3b33; }
+.exchange-unavailable { padding: var(--space-lg); border-radius: var(--radius-lg); background: var(--surface-container-low); color: var(--secondary); text-align: center; }
+.exchange-form { display: grid; gap: var(--space-md); }
+.exchange-form__direction { margin: 0; padding: 12px; border-radius: var(--radius-lg); background: var(--surface-container-low); color: var(--secondary); font-size: var(--type-body-sm-size); }
+.exchange-form__direction strong { color: var(--on-surface); }
+.exchange-form__actions { display: flex; justify-content: flex-end; gap: var(--space-sm); padding-top: var(--space-sm); }
+@media (max-width: 767px) {
+  .exchange-base-card, .exchange-history-card { padding: var(--space-md); }
+  .exchange-current-grid { grid-template-columns: 1fr; }
+  .exchange-usd-row { flex-wrap: wrap; }
+  .exchange-usd-rate { margin-left: 0; }
+  .exchange-section-heading { flex-wrap: wrap; }
+  .exchange-section-heading > .ui-chip { margin-left: 0; }
+  .exchange-history-heading { flex-direction: column; }
+}

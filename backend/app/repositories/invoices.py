@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 from app.models.category import Category
 from app.models.invoice import Invoice, InvoiceItem
 from app.models.product import Product
+from app.models.payment import Payment
 from app.schemas.invoices import InvoiceStatus
 
 
@@ -23,6 +24,7 @@ class InvoiceRepository:
         invoice_status: InvoiceStatus | None,
         created_from: datetime | None,
         created_to: datetime | None,
+        invoice_number: str | None = None,
         offset: int,
         limit: int,
     ) -> tuple[list[Invoice], int]:
@@ -33,6 +35,13 @@ class InvoiceRepository:
             filters.append(Invoice.created_at >= created_from)
         if created_to is not None:
             filters.append(Invoice.created_at <= created_to)
+        if invoice_number is not None:
+            escaped_number = (
+                invoice_number.replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+            )
+            filters.append(Invoice.invoice_number.ilike(f"%{escaped_number}%", escape="\\"))
 
         total = await self.session.scalar(select(func.count(Invoice.id)).where(*filters))
         result = await self.session.scalars(
@@ -102,3 +111,14 @@ class InvoiceRepository:
         )
         invoice.total_amount_usd = Decimal(total or 0)
         return invoice.total_amount_usd
+
+    async def list_payments(self, invoice_id: int) -> list[Payment]:
+        result = await self.session.scalars(
+            select(Payment)
+            .where(Payment.invoice_id == invoice_id)
+            .order_by(Payment.created_at, Payment.id)
+        )
+        return list(result.all())
+
+    async def add_payment(self, payment: Payment) -> None:
+        self.session.add(payment)

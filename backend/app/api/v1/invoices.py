@@ -15,6 +15,8 @@ from app.schemas.invoices import (
     InvoicePage,
     InvoiceRead,
     InvoiceStatus,
+    CheckoutRequest,
+    PaymentRead,
 )
 from app.services.invoices import (
     InvoiceConflict,
@@ -23,6 +25,7 @@ from app.services.invoices import (
     InvoiceProductNotFound,
     InvoiceProductUnavailable,
     InvoiceService,
+    CheckoutValidationError,
 )
 
 router = APIRouter()
@@ -42,6 +45,8 @@ async def _run(operation: Awaitable[T]) -> T:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Requested invoice resource not found") from exc
     except (InvoiceConflict, InvoiceProductUnavailable) as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except CheckoutValidationError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
 
 
 @router.post(
@@ -59,6 +64,7 @@ async def list_invoices(
     invoice_status: InvoiceStatus | None = Query(default=None, alias="status"),
     created_from: datetime | None = None,
     created_to: datetime | None = None,
+    invoice_number: str | None = Query(default=None, max_length=32),
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=50, ge=1, le=100),
     service: InvoiceService = Depends(get_invoice_service),
@@ -75,6 +81,7 @@ async def list_invoices(
             created_to=created_to,
             offset=offset,
             limit=limit,
+            invoice_number=invoice_number,
         )
     )
 
@@ -85,6 +92,31 @@ async def get_invoice(
     service: InvoiceService = Depends(get_invoice_service),
 ) -> InvoiceDetail:
     return await _run(service.get_invoice(invoice_id))
+
+
+@router.post(
+    "/invoices/{invoice_id}/checkout",
+    response_model=InvoiceRead,
+    tags=["invoices"],
+)
+async def checkout_invoice(
+    invoice_id: InvoiceId,
+    payload: CheckoutRequest,
+    service: InvoiceService = Depends(get_invoice_service),
+) -> InvoiceRead:
+    return await _run(service.checkout(invoice_id, payload.payments))
+
+
+@router.get(
+    "/invoices/{invoice_id}/payments",
+    response_model=list[PaymentRead],
+    tags=["invoices"],
+)
+async def list_invoice_payments(
+    invoice_id: InvoiceId,
+    service: InvoiceService = Depends(get_invoice_service),
+) -> list[PaymentRead]:
+    return await _run(service.list_payments(invoice_id))
 
 
 @router.post(

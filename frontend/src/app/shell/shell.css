@@ -1,0 +1,31 @@
+.app-shell { min-height: 100vh; }
+.app-shell__main { min-height: 100vh; padding-left: var(--layout-sidebar-width); }
+.app-shell__content { min-height: 100vh; padding-top: var(--layout-topbar-height); }
+.sidebar {
+  position: fixed; inset: 0 auto 0 0; z-index: 20; display: flex; flex-direction: column;
+  width: var(--layout-sidebar-width); padding: var(--space-md); background: var(--surface-container-low);
+  box-shadow: var(--shadow-navigation);
+}
+.sidebar__top { display: flex; flex: 1; flex-direction: column; gap: var(--space-md); }
+.sidebar__brand { padding: var(--space-xs); color: var(--on-surface); font: 600 16px/22px var(--font-heading); text-decoration: none; }
+.sidebar__new-invoice { display: block; padding-top: var(--space-xs); text-decoration: none; }
+.sidebar__nav { display: flex; flex-direction: column; gap: var(--space-xs); padding-top: var(--space-xs); }
+.sidebar__link { display: flex; min-height: 40px; align-items: center; gap: var(--space-sm); padding: var(--space-sm); border-radius: var(--radius-lg); color: var(--on-surface-variant); font-size: 13px; font-weight: 500; text-decoration: none; transition: background-color 120ms ease, color 120ms ease; }
+.sidebar__link:hover { background: var(--surface-container-high); color: var(--on-surface); }
+.sidebar__link--active { background: var(--surface-container); color: var(--on-surface); font-weight: 600; }
+.top-bar { position: fixed; z-index: 10; inset: 0 0 auto var(--layout-sidebar-width); display: flex; height: var(--layout-topbar-height); align-items: center; gap: var(--space-md); padding: 0 var(--space-xl); border-bottom: 1px solid rgba(27, 28, 26, 0.04); background: rgba(250, 249, 245, 0.96); box-shadow: var(--shadow-topbar); }
+.top-bar__context { color: var(--secondary); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.top-bar__separator { color: var(--outline-variant); }
+.top-bar__page { color: var(--secondary); font-size: 13px; }
+
+@media (max-width: 767px) {
+  .app-shell__main { padding-left: 0; padding-top: 64px; }
+  .sidebar { position: relative; inset: auto; width: 100%; padding: 12px 16px 8px; box-shadow: none; }
+  .sidebar__top { gap: 8px; }
+  .sidebar__brand { padding: 0 4px; }
+  .sidebar__new-invoice { display: none; }
+  .sidebar__nav { flex-direction: row; overflow-x: auto; padding: 0 0 4px; }
+  .sidebar__link { flex: 0 0 auto; }
+  .top-bar { inset: 0 0 auto; height: 64px; padding: 0 16px; }
+  .app-shell__content { min-height: calc(100vh - 64px); padding-top: 0; }
+}

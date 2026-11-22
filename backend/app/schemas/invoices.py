@@ -54,3 +54,30 @@ class InvoiceItemCreate(BaseModel):
 
 class InvoiceItemQuantityUpdate(BaseModel):
     quantity: int = Field(ge=1, le=2_147_483_647)
+
+
+class PaymentCreate(BaseModel):
+    currency: Literal["USD", "EUR", "EGP"]
+    amount_applied: Decimal = Field(gt=0, max_digits=12, decimal_places=2)
+    exchange_rate: Decimal = Field(gt=0, max_digits=18, decimal_places=6)
+    amount_usd_equivalent: Decimal = Field(gt=0, max_digits=12, decimal_places=2)
+    rate_source: Literal["MANUAL", "CENTRAL_BANK", "BASE"]
+    payment_method: Literal["CASH", "VISA"]
+
+
+class CheckoutRequest(BaseModel):
+    payments: list[PaymentCreate] = Field(min_length=1)
+
+
+class PaymentRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    invoice_id: int
+    currency: Literal["USD", "EUR", "EGP"]
+    amount_applied: Decimal
+    exchange_rate: Decimal
+    amount_usd_equivalent: Decimal
+    rate_source: Literal["MANUAL", "CENTRAL_BANK", "BASE"]
+    payment_method: Literal["CASH", "VISA"]
+    created_at: datetime

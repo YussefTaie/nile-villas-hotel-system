@@ -1,7 +1,9 @@
 """Application configuration loaded from environment variables."""
 
 from pathlib import Path
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolve .env relative to the backend root (two levels up from this file).
@@ -25,6 +27,16 @@ class Settings(BaseSettings):
     # ── General ──────────────────────────────────────────────────────────
     PROJECT_NAME: str = "Nile Villas System"
     API_V1_PREFIX: str = "/api/v1"
+    REPORTING_TIMEZONE: str = "Africa/Cairo"
+
+    @field_validator("REPORTING_TIMEZONE")
+    @classmethod
+    def validate_reporting_timezone(cls, value: str) -> str:
+        try:
+            ZoneInfo(value)
+        except ZoneInfoNotFoundError as exc:
+            raise ValueError("REPORTING_TIMEZONE must be a valid IANA timezone") from exc
+        return value
 
     # ── Database ─────────────────────────────────────────────────────────
     DATABASE_URL: str  # e.g. postgresql+psycopg://user:pass@host:5432/db
