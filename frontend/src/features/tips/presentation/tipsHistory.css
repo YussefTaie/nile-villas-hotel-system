@@ -1,0 +1,31 @@
+.tips-history__filters { display: flex; align-items: end; flex-wrap: wrap; gap: var(--space-md); margin-bottom: var(--space-lg); }
+.tips-history__filter { display: grid; flex: 1 1 150px; gap: var(--space-xs); color: var(--on-surface-variant); font-size: var(--type-label-md-size); }
+.tips-history__filter input, .tips-history__filter select { width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid var(--outline-variant); border-radius: var(--radius); background: var(--surface-container-lowest); }
+.tips-history__results { padding: 0; overflow: hidden; }
+.tips-history__table { min-width: 1040px; }
+.tips-history__table .tips-history__original { font-weight: 600; }
+.tips-history__original small { margin-left: 4px; color: var(--secondary); font-size: var(--type-label-sm-size); }
+.tips-history__table .tips-history__equivalent { color: var(--primary); font-weight: 600; }
+.tips-history__table a { color: var(--primary); font-weight: 600; text-decoration: none; }
+.tips-history__pagination { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); padding: 14px 16px; color: var(--secondary); }
+.tips-history__pagination > div { display: flex; gap: var(--space-sm); }
+.tips-history__validation, .record-tip__error { color: var(--error); }
+.tips-history__success { padding: 12px 16px; border-radius: var(--radius); background: var(--primary-fixed); color: var(--on-primary-fixed); }
+.record-tip { display: grid; gap: var(--space-md); }
+.record-tip__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.record-tip__invoice-picker { display: grid; gap: var(--space-sm); }
+.record-tip__search { display: flex; align-items: end; gap: var(--space-sm); }
+.record-tip__search .ui-field { flex: 1; }
+.record-tip__invoice-results { display: grid; max-height: 180px; overflow: auto; border: 1px solid var(--outline-variant); border-radius: var(--radius); }
+.record-tip__invoice-results button { display: flex; justify-content: space-between; gap: var(--space-md); padding: 10px 12px; border: 0; border-bottom: 1px solid var(--surface-container-high); background: var(--surface-container-lowest); text-align: left; cursor: pointer; }
+.record-tip__invoice-results button:last-child { border-bottom: 0; }
+.record-tip__invoice-results button.is-selected { background: var(--primary-fixed); }
+.record-tip__invoice-results small { color: var(--secondary); }
+.record-tip__selected { margin: 0; color: var(--primary); font-weight: 600; }
+.record-tip__rate, .record-tip__equivalent { display: grid; gap: 4px; align-content: start; padding: 10px 12px; border-radius: var(--radius); background: var(--surface-container-low); }
+.record-tip__rate > span, .record-tip__equivalent > span { color: var(--secondary); font-size: var(--type-label-sm-size); }
+.record-tip__rate small { color: var(--secondary); }
+.record-tip__equivalent { grid-template-columns: 1fr auto; align-items: center; }
+.record-tip__equivalent strong { color: var(--primary); font: 700 var(--type-title-lg-size)/var(--type-title-lg-line) var(--font-heading); }
+.record-tip__actions { display: flex; justify-content: flex-end; gap: var(--space-sm); padding-top: var(--space-sm); }
+@media (max-width: 767px) { .tips-history__filters { align-items: stretch; } .record-tip__row { grid-template-columns: 1fr; } .tips-history__pagination { align-items: flex-start; flex-direction: column; } }

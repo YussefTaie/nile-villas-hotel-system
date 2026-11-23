@@ -153,6 +153,12 @@ class InvoiceService:
             if detail is None or not detail.items:
                 raise InvoiceConflict("Invoice must contain at least one item")
             total = Decimal(invoice.total_amount_usd).quantize(Decimal("0.01"))
+            locked_rates = {}
+            foreign_currencies = sorted({
+                payment.currency for payment in payments if payment.currency != "USD"
+            })
+            for currency in foreign_currencies:
+                locked_rates[currency] = await self.repository.get_current_exchange_rate(currency)
             converted: list[Decimal] = []
             for payment in payments:
                 if payment.currency == "USD":
@@ -160,6 +166,16 @@ class InvoiceService:
                         raise CheckoutValidationError("USD payments must use exchange_rate 1 and rate_source BASE")
                 elif payment.rate_source not in {"MANUAL", "CENTRAL_BANK"}:
                     raise CheckoutValidationError("Foreign currency payments must use MANUAL or CENTRAL_BANK rates")
+                else:
+                    current_rate = locked_rates[payment.currency]
+                    if (
+                        current_rate is None
+                        or current_rate.rate_to_usd != payment.exchange_rate
+                        or current_rate.source != payment.rate_source
+                    ):
+                        raise CheckoutValidationError(
+                            f"{payment.currency} exchange rate changed; refresh rates and retry checkout"
+                        )
                 computed = (payment.amount_applied / payment.exchange_rate).quantize(
                     Decimal("0.01"), rounding=ROUND_HALF_UP
                 )

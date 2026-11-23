@@ -58,3 +58,27 @@ async def test_health_check_database_unavailable(
     assert "private connection details" not in response.text
     assert session.execute_calls == 1
 
+
+@pytest.mark.asyncio
+async def test_cors_allows_only_configured_local_frontend_origins(client: AsyncClient) -> None:
+    for origin in ("http://localhost:5173", "http://127.0.0.1:5173"):
+        response = await client.options(
+            "/api/v1/health",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "GET",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+        assert response.status_code == 200
+        assert response.headers["access-control-allow-origin"] == origin
+
+    denied = await client.options(
+        "/api/v1/health",
+        headers={
+            "Origin": "https://untrusted.example",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert "access-control-allow-origin" not in denied.headers
+

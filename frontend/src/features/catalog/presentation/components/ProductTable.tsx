@@ -12,15 +12,17 @@ const usdFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currenc
 function formatUpdatedAt(value: string): string {
   const updatedAt = new Date(value);
   if (Number.isNaN(updatedAt.valueOf())) return '—';
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const updateDay = new Date(updatedAt.getFullYear(), updatedAt.getMonth(), updatedAt.getDate());
-  const dayDifference = Math.round((today.valueOf() - updateDay.valueOf()) / 86_400_000);
-  const time = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(updatedAt);
+  const cairoDay = (date: Date) => {
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
+    const part = (type: string) => parts.find((item) => item.type === type)?.value ?? '';
+    return `${part('year')}-${part('month')}-${part('day')}`;
+  };
+  const dayDifference = Math.round((Date.parse(`${cairoDay(new Date())}T00:00:00Z`) - Date.parse(`${cairoDay(updatedAt)}T00:00:00Z`)) / 86_400_000);
+  const time = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', hour: 'numeric', minute: '2-digit' }).format(updatedAt);
   if (dayDifference === 0) return `Today, ${time}`;
   if (dayDifference === 1) return `Yesterday, ${time}`;
   if (dayDifference > 1 && dayDifference < 7) return `${dayDifference} days ago`;
-  return new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: '2-digit' }).format(updatedAt);
+  return new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', year: 'numeric', month: 'short', day: '2-digit' }).format(updatedAt);
 }
 
 interface ProductTableProps {

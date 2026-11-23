@@ -1,0 +1,20 @@
+.invoice-history__filters { display: flex; align-items: end; flex-wrap: wrap; gap: var(--space-md); margin-bottom: var(--space-lg); }
+.invoice-history__search { display: flex; flex: 1 1 300px; align-items: center; gap: var(--space-sm); }
+.invoice-history__search .search-field { flex: 1; }
+.invoice-history__date { display: grid; gap: var(--space-xs); color: var(--on-surface-variant); font-size: var(--type-label-md-size); }
+.invoice-history__date input { min-height: 44px; padding: 8px 10px; border: 1px solid var(--outline-variant); border-radius: var(--radius); background: var(--surface-container-lowest); }
+.invoice-history__statuses { display: flex; flex: 1 1 100%; flex-wrap: wrap; gap: var(--space-xs); }
+.invoice-history__status { min-height: 36px; padding: 6px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-pill); background: transparent; color: var(--on-surface-variant); cursor: pointer; }
+.invoice-history__status.is-active { border-color: var(--primary); background: var(--primary); color: var(--on-primary); }
+.invoice-history__results { padding: 0; overflow: hidden; }
+.invoice-history__table-wrap { overflow-x: auto; }
+.invoice-history__table { width: 100%; border-collapse: collapse; text-align: left; }
+.invoice-history__table th, .invoice-history__table td { padding: 14px 16px; border-bottom: 1px solid var(--surface-container-high); white-space: nowrap; }
+.invoice-history__table th { color: var(--secondary); font-size: var(--type-label-sm-size); font-weight: 600; text-transform: uppercase; }
+.invoice-history__table .numeric { text-align: right; font-variant-numeric: tabular-nums; }
+.invoice-history__number { color: var(--primary); font-weight: 650; text-decoration: none; }
+.invoice-history__actions { display: flex; gap: 12px; }
+.invoice-history__actions a { color: var(--primary); font-weight: 600; text-decoration: none; }
+.invoice-history__pagination { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); padding: 14px 16px; color: var(--secondary); }
+.invoice-history__pagination > div { display: flex; gap: var(--space-sm); }
+@media (max-width: 767px) { .invoice-history__filters { align-items: stretch; } .invoice-history__date { flex: 1 1 140px; } .invoice-history__pagination { align-items: flex-start; flex-direction: column; } }

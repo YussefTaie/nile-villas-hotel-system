@@ -2,6 +2,7 @@
 
 import asyncio
 from collections.abc import AsyncGenerator
+import os
 import sys
 
 if sys.platform == "win32":
@@ -10,6 +11,7 @@ if sys.platform == "win32":
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.engine import make_url
 
 from app.core.config import settings
 from app.db.base import Base
@@ -17,15 +19,28 @@ from app.db.session import get_db
 from app.main import app
 
 
-# ── Test database engine ─────────────────────────────────────────────────
-# Reuses the same DATABASE_URL.  For isolation you can point a separate
-# TEST_DATABASE_URL env var at a dedicated test database.
-test_engine = create_async_engine(settings.DATABASE_URL, echo=False)
-TestSessionLocal = async_sessionmaker(
-    bind=test_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
+# Database tests require an explicit, distinct disposable database. Never fall
+# back to DATABASE_URL: setup_database creates and drops every mapped table.
+test_database_url = os.environ.get("TEST_DATABASE_URL")
+test_engine = None
+TestSessionLocal = None
+if test_database_url:
+    configured = make_url(settings.DATABASE_URL)
+    isolated = make_url(test_database_url)
+    if (
+        configured.host == isolated.host
+        and configured.port == isolated.port
+        and configured.database == isolated.database
+    ):
+        raise RuntimeError("TEST_DATABASE_URL must point to a database distinct from DATABASE_URL")
+    if not isolated.database or not isolated.database.lower().endswith(("_test", "_testing")):
+        raise RuntimeError("TEST_DATABASE_URL database name must end in _test or _testing")
+    test_engine = create_async_engine(test_database_url, echo=False)
+    TestSessionLocal = async_sessionmaker(
+        bind=test_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
 
 
 @pytest.fixture(scope="session")
@@ -36,11 +51,13 @@ def anyio_backend() -> str:
 
 @pytest.fixture
 async def setup_database() -> AsyncGenerator[None, None]:
-    """Create all tables before test and drop them afterwards.
+    """Create and drop tables only in the explicitly configured test database.
 
     Explicitly request this fixture (or `db_session`) in tests that require
     a real database connection.
     """
+    if test_engine is None:
+        pytest.skip("Set TEST_DATABASE_URL to a dedicated *_test database for database tests")
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
@@ -51,12 +68,15 @@ async def setup_database() -> AsyncGenerator[None, None]:
 @pytest.fixture
 async def db_session(setup_database: None) -> AsyncGenerator[AsyncSession, None]:
     """Provide a test-scoped database session."""
+    assert TestSessionLocal is not None
     async with TestSessionLocal() as session:
         yield session
 
 
 async def _override_get_db() -> AsyncGenerator[AsyncSession, None]:
     """Provide a test-scoped session that rolls back after each test."""
+    if TestSessionLocal is None:
+        pytest.skip("Set TEST_DATABASE_URL to a dedicated *_test database for database-backed API tests")
     async with TestSessionLocal() as session:
         yield session
 

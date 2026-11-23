@@ -68,6 +68,11 @@ class Repository:
     async def add_payment(self, payment: Payment) -> None:
         self.session.add(payment)
 
+    async def get_current_exchange_rate(self, currency: str):
+        if currency != "EUR":
+            return None
+        return SimpleNamespace(rate_to_usd=Decimal("0.900000"), source="MANUAL")
+
 
 def payment(currency: str, amount: str, rate: str, equivalent: str,
             source: str = "MANUAL", method: str = "CASH") -> PaymentCreate:
@@ -176,6 +181,20 @@ async def test_checkout_invalid_rates_rejected() -> None:
     with pytest.raises(CheckoutValidationError):
         await instance.checkout(9, [payment("EUR", "90", "0.9", "100", "BASE")])
     assert not session.payments
+
+
+@pytest.mark.asyncio
+async def test_checkout_rejects_stale_foreign_exchange_rate() -> None:
+    instance, session, repository = service()
+    repository.get_current_exchange_rate = lambda _currency: _rate_result()
+    with pytest.raises(CheckoutValidationError, match="rate changed"):
+        await instance.checkout(9, [payment("EUR", "90", "0.800000", "112.50")])
+    assert not session.payments
+    assert session.invoice.status == "OPEN"
+
+
+async def _rate_result():
+    return SimpleNamespace(rate_to_usd=Decimal("0.900000"), source="MANUAL")
 
 
 @pytest.mark.asyncio

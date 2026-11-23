@@ -11,6 +11,7 @@ from app.models.category import Category
 from app.models.invoice import Invoice, InvoiceItem
 from app.models.product import Product
 from app.models.payment import Payment
+from app.models.exchange_rate import ExchangeRate
 from app.schemas.invoices import InvoiceStatus
 
 
@@ -122,3 +123,11 @@ class InvoiceRepository:
 
     async def add_payment(self, payment: Payment) -> None:
         self.session.add(payment)
+
+    async def get_current_exchange_rate(self, currency: str) -> ExchangeRate | None:
+        """Read and lock the authoritative current rate for checkout settlement."""
+        return await self.session.scalar(
+            select(ExchangeRate)
+            .where(ExchangeRate.currency == currency, ExchangeRate.is_current.is_(True))
+            .with_for_update(of=ExchangeRate)
+        )

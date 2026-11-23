@@ -187,6 +187,10 @@ async def test_invoice_and_item_locks_compile_for_postgresql() -> None:
     compiled = str(capture.statement.compile(dialect=postgresql.dialect()))
     assert "FOR UPDATE OF invoice_items" in compiled
 
+    await repository.get_current_exchange_rate("EUR")
+    compiled = str(capture.statement.compile(dialect=postgresql.dialect()))
+    assert "FOR UPDATE OF exchange_rates" in compiled
+
 
 @pytest.mark.asyncio
 async def test_create_and_list_invoice_api(
